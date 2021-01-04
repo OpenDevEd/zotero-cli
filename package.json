@@ -19,17 +19,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/edtechhub/zotero-cli.git"
+    "url": "git+https://github.com/opendeved/zotero-cli.git"
   },
   "keywords": [
     "zotero"
   ],
-  "author": "Emiliano Heyns",
+  "author": "opendeved",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/edtechhub/zotero-cli/issues"
+    "url": "https://github.com/opendeved/zotero-cli/issues"
   },
-  "homepage": "https://github.com/edtechhub/zotero-cli#readme",
+  "homepage": "https://github.com/opendeved/zotero-cli#readme",
   "devDependencies": {
     "@types/node": "^13.11.1",
     "ts-node": "^8.8.2",
