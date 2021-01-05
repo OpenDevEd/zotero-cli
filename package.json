@@ -27,10 +27,6 @@
   "keywords": [
     "zotero"
   ],
-  "bin": {
-    "zotero-cli": "./bin/zotero-cli.js"
-  },
-  "preferGlobal": true,
   "author": "opendeved",
   "license": "ISC",
   "bugs": {
