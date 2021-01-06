@@ -43,7 +43,6 @@ const arg = new class {
     if (!fs.existsSync(v) || !fs.lstatSync(v).isFile()) throw new Error(`${JSON.stringify(v)} is not a file`)
     return v
   }
-
   path(v) {
     if (!fs.existsSync(v)) throw new Error(`${JSON.stringify(v)} does not exist`)
     return v
@@ -52,7 +51,9 @@ const arg = new class {
   json(v) {
     return JSON.parse(v)
   }
-}
+
+  }
+
 
 class Zotero {
   args: any
@@ -142,13 +143,13 @@ class Zotero {
         if (isNaN(parseInt(value))) this.parser.error(`${option.dest} must be numeric, not ${value}`)
         value = parseInt(value)
 
-      } else if (option.type === arg.path) {
+      } else if (option.type === this.args.path) {
         if (!fs.existsSync(value)) this.parser.error(`${option.dest}: ${value} does not exist`)
 
       } else if (option.type === arg.file) {
         if (!fs.existsSync(value) || !fs.lstatSync(value).isFile()) this.parser.error(`${option.dest}: ${value} is not a file`)
 
-      } else if (option.type === arg.json && typeof value === 'string') {
+      } else if (option.type === this.args.json && typeof value === 'string') {
         try {
           value = JSON.parse(value)
         } catch (err) {
