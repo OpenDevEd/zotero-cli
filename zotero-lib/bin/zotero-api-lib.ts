@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
+
+
 require('dotenv').config();
 require('docstring');
 const os = require('os');
 
-// import { ArgumentParser } from 'argparse'
+//import { ArgumentParser } from 'argparse'
 const { ArgumentParser } = require('argparse');
 const toml = require('@iarna/toml');
 const fs = require('fs');
@@ -17,8 +19,8 @@ const { parse } = require("args-any");
 
 
 
-// import { parse as TOML } from '@iarna/toml'
-// import fs = require('fs')
+import { parse as TOML } from '@iarna/toml'
+//import fs = require('fs')
 // import path = require('path')
 
 // import request = require('request-promise')
@@ -55,7 +57,7 @@ const arg = new class {
   }
 
 
-class Zotero {
+module.exports = class Zotero {
   args: any
   output: string = ''
   parser: any
@@ -92,8 +94,9 @@ class Zotero {
       this[cmd](sp)
     }
      */
-    this.args = this.parser.parseArgs()
-
+    //  this.args = this.parser.parseArgs()
+     //this.args = this.parser.getArgument()
+    
     // pick up config
     const config: string = [this.args.config, 'zotero-cli.toml', `${os.homedir()}/.config/zotero-cli/zotero-cli.toml`].find(cfg => fs.existsSync(cfg))
     this.config = config ? toml.parse(fs.readFileSync(config, 'utf-8')) : {}
@@ -940,10 +943,7 @@ async  $delete(argparser = null) {
 async  $key(argparse) {
   /** Show details about this API key. (API: /keys ) */
   this.show(await this.get(`/keys/${this.args.api_key}`, { userOrGroupPrefix: false }))
-}
-
-
-
-
+  
+ }
 
 }
