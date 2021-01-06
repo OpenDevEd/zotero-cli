@@ -48,8 +48,8 @@ Previously these were defined by the functions themselves (see below).
   parser_items.addArgument('--validate', { type: argparse.path, help: 'json-schema file for all itemtypes, or directory with schema files, one per itemtype.' })
 
   //async item
-  const parser_item = subparsers.add_parser("items", { "help": "Item command" });
-  parser_item.addArgument('--key', { required: true, help: 'The key of the item. You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
+  const parser_item = subparsers.add_parser("item", { "help": "Item command" });
+  parser_item.addArgument('--key', { required: true, nargs: 1, help: 'The key of the item. You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
   parser_item.addArgument('--children', { action: 'storeTrue', help: 'Retrieve list of children for the item.' })
   parser_item.addArgument('--filter', { type: argparse.json, help: 'Provide a filter as described in the Zotero API documentation under read requests / parameters. To retrieve multiple items you have use "itemkey"; for example: \'{"format": "json,bib", "itemkey": "A,B,C"}\'. See https://www.zotero.org/support/dev/web_api/v3/basics#search_syntax.' })
   parser_item.addArgument('--addfile', { nargs: '*', help: 'Upload attachments to the item. (/items/new)' })
@@ -75,7 +75,6 @@ Previously these were defined by the functions themselves (see below).
   parser_update.addArgument('--replace', { action: 'storeTrue', help: 'Replace the item by sumbitting the complete json.' })
   parser_update.addArgument('items', { nargs: 1, help: 'Path of item files in json format.' })
 
-
   //async get
   const parser_get = subparsers.add_parser("get", { "help": "get command" });
   parser.addArgument('--root', { action: 'storeTrue', help: 'TODO: document' })
@@ -86,7 +85,6 @@ Previously these were defined by the functions themselves (see below).
   parser_post.addArgument('uri', { action: "store", nargs: 1, help: 'TODO: document' })
   parser_post.addArgument('--data', { required: true, help: 'Escaped JSON string for post data' })
 
-
   //async put
   const parser_put = subparsers.add_parser("put", { "help": "put command" });
   parser_put.addArgument('uri', { action: "store", nargs: 1, help: 'TODO: document' })
@@ -95,7 +93,6 @@ Previously these were defined by the functions themselves (see below).
   //async delete
   const parser_delete = subparsers.add_parser("delete", { "help": "delete command" });
   parser_delete.addArgument('uri', { nargs: '+', help: 'Request uri' })
-  
   
   //fields
   const parser_fields = subparsers.add_parser("fields", { "help": "fields command" });
@@ -110,12 +107,20 @@ Previously these were defined by the functions themselves (see below).
   parser_tags.addArgument('--filter', { help: 'Tags of all types matching a specific name.' })
   parser_tags.addArgument('--count', { action: 'storeTrue', help: 'TODO: document' })
 
+  // TODO: reinstate key
+  /*
+  async function $key(argparse) {
+    //** 
+    this.show(await this.get(`/keys/${this.args.api_key}`, { userOrGroupPrefix: false }))
+  }
+  */
+
   /*
 
-This was the previous method of getting sub-parsers.
+  This was the previous method of getting sub-parsers.
 
-It extracts the sub-parser functions from each function. This is a
-smart way of defining the interface.
+  It extracts the sub-parser functions from each function. This is a
+  smart way of defining the interface.
 
    */
   /*
@@ -123,7 +128,6 @@ smart way of defining the interface.
   // add all methods that do not start with _ as a command
   for (const cmd of Object.getOwnPropertyNames(Object.getPrototypeOf(parser)).sort()) {
     if (typeof parser[cmd] !== 'function' || cmd[0] !== '$') continue
-
     const sp = subparsers.addParser(cmd.slice(1).replace(/_/g, '-'), { description: parser[cmd].__doc__, help: parser[cmd].__doc__ })
     // when called with an argparser, the command is expected to add relevant parameters and return
     // the command must have a docstring
