@@ -17,97 +17,108 @@ function getArguments() {
   parser.addArgument('--out', { help: 'Output to file' })
   parser.addArgument('--verbose', { action: 'storeTrue', help: 'Log requests.' })
 
-  //async $collections
+/*
+The following code explcitly adds subparsers. 
+Previously these were defined by the functions themselves (see below).
+*/
 
-  parser.addArgument('--top', { action: 'storeTrue', help: 'Show only collection at top level.' })
-  //parser.addArgument('--key', { action:'',help: 'Show all the child collections of collection with key. You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
-  parser.addArgument('--create-child', { nargs: '*', help: 'Create child collections of key (or at the top level if no key is specified) with the names specified.' })
+  //async $collections
+  const subparsers = parser.add_subparsers({ "help": "sub-command help" });
+  const parser_collections = subparsers.add_parser("collections", { "help": "Collections command" });
+  parser_collections.addArgument('--top', { action: 'storeTrue', help: 'Show only collection at top level.' })
+  parser_collections.addArgument('--key', { action:'store', required: true, help: 'Show all the child collections of collection with key. You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
+  parser_collections.addArgument('--create-child', { nargs: '*', help: 'Create child collections of key (or at the top level if no key is specified) with the names specified.' })
 
   //async $collection
-
-
-  //parser.addArgument('--key', { required: true, help: 'The key of the collection (required). You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
-  parser.addArgument('--tags', { action: 'storeTrue', help: 'Display tags present in the collection.' })
-  // argparser.addArgument('itemkeys', { nargs: '*' , help: 'Item keys for items to be added or removed from this collection.'})
-  parser.addArgument('--add', { nargs: '*', help: 'Add items to this collection. Note that adding items to collections with \'item --addtocollection\' may require fewer API queries. (Convenience method: patch item->data->collections.)' })
-  parser.addArgument('--remove', { nargs: '*', help: 'Convenience method: Remove items from this collection. Note that removing items from collections with \'item --removefromcollection\' may require fewer API queries. (Convenience method: patch item->data->collections.)' })
+  const parser_collection = subparsers.add_parser("collection", { "help": "Collection command" });
+  parser_collection.addArgument('--key', { required: true, help: 'The key of the collection (required). You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
+  parser_collection.addArgument('--tags', { action: 'storeTrue', help: 'Display tags present in the collection.' })
+  parser_collection.addArgument('itemkeys', { nargs: '*' , help: 'Item keys for items to be added or removed from this collection.'})
+  parser_collection.addArgument('--add', { nargs: '*', help: 'Add items to this collection. Note that adding items to collections with \'item --addtocollection\' may require fewer API queries. (Convenience method: patch item->data->collections.)' })
+  parser_collection.addArgument('--remove', { nargs: '*', help: 'Convenience method: Remove items from this collection. Note that removing items from collections with \'item --removefromcollection\' may require fewer API queries. (Convenience method: patch item->data->collections.)' })
 
 
   //async items
-
-  parser.addArgument('--count', { action: 'storeTrue', help: 'Return the number of items.' })
+  const parser_items = subparsers.add_parser("items", { "help": "Items command" });
+  parser_items.addArgument('--count', { action: 'storeTrue', help: 'Return the number of items.' })
   // argparser.addArgument('--all', { action: 'storeTrue', help: 'obsolete' })
-  //parser.addArgument('--filter', { type: argparse.json, help: 'Provide a filter as described in the Zotero API documentation under read requests / parameters. For example: \'{"format": "json,bib", "limit": 100, "start": 100}\'.' })
-  parser.addArgument('--collection', { help: 'Retrive list of items for collection. You can provide the collection key as a zotero-select link (zotero://...) to also set the group-id.' })
-  //parser.addArgument('--top', { action: 'storeTrue', help: 'Retrieve top-level items in the library/collection (excluding child items / attachments, excluding trashed items).' })
-  parser.addArgument('--validate', { type: argparse.path, help: 'json-schema file for all itemtypes, or directory with schema files, one per itemtype.' })
+  parser_items.addArgument('--filter', { type: argparse.json, help: 'Provide a filter as described in the Zotero API documentation under read requests / parameters. For example: \'{"format": "json,bib", "limit": 100, "start": 100}\'.' })
+  parser_items.addArgument('--collection', { help: 'Retrive list of items for collection. You can provide the collection key as a zotero-select link (zotero://...) to also set the group-id.' })
+  parser_items.addArgument('--top', { action: 'storeTrue', help: 'Retrieve top-level items in the library/collection (excluding child items / attachments, excluding trashed items).' })
+  parser_items.addArgument('--validate', { type: argparse.path, help: 'json-schema file for all itemtypes, or directory with schema files, one per itemtype.' })
 
   //async item
-
-  //parser.addArgument('--key', { required: true, help: 'The key of the item. You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
-  parser.addArgument('--children', { action: 'storeTrue', help: 'Retrieve list of children for the item.' })
-  //parser.addArgument('--filter', { type: argparse.json, help: 'Provide a filter as described in the Zotero API documentation under read requests / parameters. To retrieve multiple items you have use "itemkey"; for example: \'{"format": "json,bib", "itemkey": "A,B,C"}\'. See https://www.zotero.org/support/dev/web_api/v3/basics#search_syntax.' })
-  parser.addArgument('--addfile', { nargs: '*', help: 'Upload attachments to the item. (/items/new)' })
-  parser.addArgument('--savefiles', { nargs: '*', help: 'Download all attachments from the item (/items/KEY/file).' })
-  parser.addArgument('--addtocollection', { nargs: '*', help: 'Add item to collections. (Convenience method: patch item->data->collections.)' })
-  parser.addArgument('--removefromcollection', { nargs: '*', help: 'Remove item from collections. (Convenience method: patch item->data->collections.)' })
-  parser.addArgument('--addtags', { nargs: '*', help: 'Add tags to item. (Convenience method: patch item->data->tags.)' })
-  parser.addArgument('--removetags', { nargs: '*', help: 'Remove tags from item. (Convenience method: patch item->data->tags.)' })
+  const parser_item = subparsers.add_parser("items", { "help": "Item command" });
+  parser_item.addArgument('--key', { required: true, help: 'The key of the item. You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
+  parser_item.addArgument('--children', { action: 'storeTrue', help: 'Retrieve list of children for the item.' })
+  parser_item.addArgument('--filter', { type: argparse.json, help: 'Provide a filter as described in the Zotero API documentation under read requests / parameters. To retrieve multiple items you have use "itemkey"; for example: \'{"format": "json,bib", "itemkey": "A,B,C"}\'. See https://www.zotero.org/support/dev/web_api/v3/basics#search_syntax.' })
+  parser_item.addArgument('--addfile', { nargs: '*', help: 'Upload attachments to the item. (/items/new)' })
+  parser_item.addArgument('--savefiles', { nargs: '*', help: 'Download all attachments from the item (/items/KEY/file).' })
+  parser_item.addArgument('--addtocollection', { nargs: '*', help: 'Add item to collections. (Convenience method: patch item->data->collections.)' })
+  parser_item.addArgument('--removefromcollection', { nargs: '*', help: 'Remove item from collections. (Convenience method: patch item->data->collections.)' })
+  parser_item.addArgument('--addtags', { nargs: '*', help: 'Add tags to item. (Convenience method: patch item->data->tags.)' })
+  parser_item.addArgument('--removetags', { nargs: '*', help: 'Remove tags from item. (Convenience method: patch item->data->tags.)' })
 
   //async attachement
-
-  parser.addArgument('--key', { required: true, help: 'The key of the item. You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
-  parser.addArgument('--save', { required: true, help: 'Filename to save attachment to.' })
+  const parser_attachment = subparsers.add_parser("attachment", { "help": "Item command" });
+  parser_attachment.addArgument('--key', { required: true, help: 'The key of the item. You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
+  parser_attachment.addArgument('--save', { required: true, help: 'Filename to save attachment to.' })
   
   //async create item
-
-  parser.addArgument('--template', { help: "Retrieve a template for the item you wish to create. You can retrieve the template types using the main argument 'types'." })
-  parser.addArgument('items', { nargs: '*', help: 'Json files for the items to be created.' })
+  const parser_create = subparsers.add_parser("attachment", { "help": "Create command" });
+  parser_create.addArgument('--template', { help: "Retrieve a template for the item you wish to create. You can retrieve the template types using the main argument 'types'." })
+  parser_create.addArgument('items', { nargs: '*', help: 'Json files for the items to be created.' })
 
   //update item
-
-
-  //parser.addArgument('--key', { required: true, help: 'The key of the item. You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
-  parser.addArgument('--replace', { action: 'storeTrue', help: 'Replace the item by sumbitting the complete json.' })
-  parser.addArgument('items', { nargs: 1, help: 'Path of item files in json format.' })
+  const parser_update = subparsers.add_parser("update", { "help": "update command" });
+  parser_update.addArgument('--key', { required: true, help: 'The key of the item. You can provide the key as zotero-select link (zotero://...) to also set the group-id.' })
+  parser_update.addArgument('--replace', { action: 'storeTrue', help: 'Replace the item by sumbitting the complete json.' })
+  parser_update.addArgument('items', { nargs: 1, help: 'Path of item files in json format.' })
 
 
   //async get
-
+  const parser_get = subparsers.add_parser("get", { "help": "get command" });
   parser.addArgument('--root', { action: 'storeTrue', help: 'TODO: document' })
   parser.addArgument('uri', { nargs: '+', help: 'TODO: document' })
 
   //async post
-
-  parser.addArgument('uri', { nargs: '1', help: 'TODO: document' })
-  parser.addArgument('--data', { required: true, help: 'Escaped JSON string for post data' })
+  const parser_post = subparsers.add_parser("post", { "help": "post command" });
+  parser_post.addArgument('uri', { action: "store", nargs: 1, help: 'TODO: document' })
+  parser_post.addArgument('--data', { required: true, help: 'Escaped JSON string for post data' })
 
 
   //async put
-
-  parser.addArgument('uri', { nargs: '1', help: 'TODO: document' })
-  //parser.addArgument('--data', { required: true, help: 'Escaped JSON string for post data' })
+  const parser_put = subparsers.add_parser("put", { "help": "put command" });
+  parser_put.addArgument('uri', { action: "store", nargs: 1, help: 'TODO: document' })
+  parser_put.addArgument('--data', { required: true, help: 'Escaped JSON string for post data' })
 
   //async delete
-
-  parser.addArgument('uri', { nargs: '+', help: 'Request uri' })
+  const parser_delete = subparsers.add_parser("delete", { "help": "delete command" });
+  parser_delete.addArgument('uri', { nargs: '+', help: 'Request uri' })
   
   
   //fields
-  parser.addArgument('--type', { help: 'Display fields types for TYPE.' })
-
+  const parser_fields = subparsers.add_parser("delete", { "help": "fields command" });
+  parser_fields.addArgument('--type', { help: 'Display fields types for TYPE.' })
 
   //searches
-  
-  parser.addArgument('--create', { nargs: 1, help: 'Path of JSON file containing the definitions of saved searches.' })
+  const parser_searches = subparsers.add_parser("searches", { "help": "searches command" });  
+  parser_searches.addArgument('--create', { nargs: 1, help: 'Path of JSON file containing the definitions of saved searches.' })
 
   //tags
-  parser.addArgument('--filter', { help: 'Tags of all types matching a specific name.' })
-  //parser.addArgument('--count', { action: 'storeTrue', help: 'TODO: document' })
+  const parser_tags = subparsers.add_parser("tags", { "help": "tags command" });
+  parser_tags.addArgument('--filter', { help: 'Tags of all types matching a specific name.' })
+  parser_tags.addArgument('--count', { action: 'storeTrue', help: 'TODO: document' })
 
+  /*
 
-  
+This was the previous method of getting sub-parsers.
 
+It extracts the sub-parser functions from each function. This is a
+smart way of defining the interface.
+
+   */
+  /*
   const subparsers = parser.addSubparsers({ title: 'commands', dest: 'command', required: true })
   // add all methods that do not start with _ as a command
   for (const cmd of Object.getOwnPropertyNames(Object.getPrototypeOf(parser)).sort()) {
@@ -117,9 +128,7 @@ function getArguments() {
     // when called with an argparser, the command is expected to add relevant parameters and return
     // the command must have a docstring
     parser[cmd](sp)
-
-}
-
+  } */
 
   // Other URLs
   // https://www.zotero.org/support/dev/web_api/v3/basics
