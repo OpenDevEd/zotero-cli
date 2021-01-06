@@ -98,7 +98,7 @@ Previously these were defined by the functions themselves (see below).
   
   
   //fields
-  const parser_fields = subparsers.add_parser("delete", { "help": "fields command" });
+  const parser_fields = subparsers.add_parser("fields", { "help": "fields command" });
   parser_fields.addArgument('--type', { help: 'Display fields types for TYPE.' })
 
   //searches
