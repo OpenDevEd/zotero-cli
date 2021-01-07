@@ -258,8 +258,6 @@ if (args.dryrun) {
 }
 */
 
-
-
 //console.log(`Here...${zoterolib.Zotero}`);
 
 var test = new Zotero(args);
